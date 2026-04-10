@@ -103,9 +103,10 @@ async def _handle_plain_text(message: Message) -> None:
         )
 
     except Exception as e:
+        error_msg = str(e) if str(e) else type(e).__name__
         logger.exception("Text processing error for user %d", user_id)
         try:
-            await status_msg.edit_text(f"❌ Xatolik yuz berdi: {str(e)[:200]}")
+            await status_msg.edit_text(f"Xatolik yuz berdi: {error_msg[:200]}")
         except Exception:
             pass
 
@@ -199,9 +200,10 @@ async def _handle_url(message: Message, bot: Bot, url_info: tuple) -> None:
         )
 
     except Exception as e:
+        error_msg = str(e) if str(e) else type(e).__name__
         logger.exception("Link processing error for user %d: %s", user_id, url)
         try:
-            await status_msg.edit_text(f"❌ Xatolik yuz berdi: {str(e)[:200]}")
+            await status_msg.edit_text(f"Xatolik yuz berdi: {error_msg[:200]}")
         except Exception:
             pass
     finally:
