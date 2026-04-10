@@ -8,7 +8,7 @@ from aiogram.types import Message
 
 from config import TEMP_DIR
 from database.models import get_user, log_usage, save_summary
-from keyboards.inline import summary_keyboard
+from keyboards.inline import summary_keyboard, limit_keyboard
 from services.limits import check_limit
 from services.media_processor import convert_to_mp3, get_duration, cleanup
 from services.transcriber import transcribe_audio
@@ -42,7 +42,10 @@ async def _process_audio(message: Message, bot: Bot, media_type: str) -> None:
     # ── 1. Check limits ──────────────────────────────
     limit = await check_limit(user_id)
     if not limit["allowed"]:
-        await message.reply(limit["reason"])
+        await message.reply(
+            limit["reason"],
+            reply_markup=limit_keyboard(),
+        )
         return
 
     # ── 2. Get user AI mode ──────────────────────────

@@ -99,3 +99,25 @@ def mode_keyboard(current_mode: str = "standard") -> InlineKeyboardMarkup:
         ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def limit_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard shown when user hits daily limit."""
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="⭐ Premium sotib olish",
+                callback_data="buy_premium",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="📊 Statistikam",
+                callback_data="my_stats",
+            ),
+            InlineKeyboardButton(
+                text="⭐ Premium haqida",
+                callback_data="premium_info",
+            ),
+        ],
+    ])

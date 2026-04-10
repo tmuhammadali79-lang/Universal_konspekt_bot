@@ -131,9 +131,10 @@ async def cb_buy_premium(callback: CallbackQuery, bot: Bot) -> None:
     await bot.send_invoice(
         chat_id=callback.from_user.id,
         title="Smart Summary AI Premium",
-        description="1 oylik premium obuna — cheksiz konspektlar!",
+        description="1 oylik premium obuna -- cheksiz konspektlar!",
         payload=f"premium_{callback.from_user.id}",
-        currency="XTR",  # Telegram Stars
+        provider_token="",   # empty for Telegram Stars
+        currency="XTR",      # Telegram Stars
         prices=[LabeledPrice(label="Premium (1 oy)", amount=PREMIUM_STARS_PRICE)],
     )
     await callback.answer()
