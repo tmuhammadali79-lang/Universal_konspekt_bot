@@ -38,4 +38,8 @@ class UserMiddleware(BaseMiddleware):
                 user = await get_user(user_tg.id)
             data["db_user"] = user
 
+            # Block check: silently ignore blocked users
+            if user and user.get("is_blocked"):
+                return  # don't call handler
+
         return await handler(event, data)

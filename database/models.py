@@ -18,6 +18,7 @@ async def init_db() -> None:
                 ai_mode       TEXT    DEFAULT 'standard',
                 is_premium    INTEGER DEFAULT 0,
                 premium_until TEXT,
+                is_blocked    INTEGER DEFAULT 0,
                 referral_code TEXT    UNIQUE,
                 referred_by   INTEGER,
                 created_at    TEXT    DEFAULT (datetime('now'))
@@ -47,6 +48,13 @@ async def init_db() -> None:
             )
         """)
         await db.commit()
+
+        # ── Migration: add columns if missing ─────────
+        try:
+            await db.execute("ALTER TABLE users ADD COLUMN is_blocked INTEGER DEFAULT 0")
+            await db.commit()
+        except Exception:
+            pass  # column already exists
 
 
 # ── User helpers ─────────────────────────────────────
@@ -126,6 +134,46 @@ async def get_all_user_ids() -> list[int]:
         cursor = await db.execute("SELECT user_id FROM users")
         rows = await cursor.fetchall()
         return [r[0] for r in rows]
+
+
+async def block_user(user_id: int) -> None:
+    """Block a user from using the bot."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE users SET is_blocked = 1 WHERE user_id = ?",
+            (user_id,),
+        )
+        await db.commit()
+
+
+async def unblock_user(user_id: int) -> None:
+    """Unblock a user."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE users SET is_blocked = 0 WHERE user_id = ?",
+            (user_id,),
+        )
+        await db.commit()
+
+
+async def set_unlimited_premium(user_id: int) -> None:
+    """Grant unlimited premium (no expiry)."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE users SET is_premium = 1, premium_until = 'unlimited' WHERE user_id = ?",
+            (user_id,),
+        )
+        await db.commit()
+
+
+async def remove_premium(user_id: int) -> None:
+    """Remove premium from a user."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE users SET is_premium = 0, premium_until = NULL WHERE user_id = ?",
+            (user_id,),
+        )
+        await db.commit()
 
 
 # ── Usage log helpers ────────────────────────────────

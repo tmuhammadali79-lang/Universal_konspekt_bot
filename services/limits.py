@@ -21,8 +21,20 @@ async def check_limit(user_id: int) -> dict:
     if not user:
         return {"allowed": False, "reason": "Foydalanuvchi topilmadi.", "remaining_requests": 0, "remaining_minutes": 0}
 
+    # Blocked users — reject immediately
+    if user.get("is_blocked"):
+        return {
+            "allowed": False,
+            "reason": "🚫 Siz bloklangansiz. Admin bilan bog'laning.",
+            "remaining_requests": 0,
+            "remaining_minutes": 0,
+        }
+
     # Premium users — unlimited
     if user["is_premium"]:
+        # Unlimited premium (granted by admin)
+        if user["premium_until"] == "unlimited":
+            return {"allowed": True, "reason": "", "remaining_requests": 999, "remaining_minutes": 999}
         # Check if premium hasn't expired
         if user["premium_until"]:
             until = datetime.fromisoformat(user["premium_until"])
