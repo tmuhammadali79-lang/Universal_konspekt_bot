@@ -30,15 +30,14 @@ async def cmd_admin_help(message: Message) -> None:
         return
 
     await message.answer(
-        "🔐 **Admin buyruqlari:**\n\n"
-        "📊 /stats — bot statistikasi\n"
-        "📢 /broadcast <matn> — barchaga xabar\n\n"
-        "⭐ /grant <user_id> — cheksiz premium berish\n"
-        "❌ /revoke <user_id> — premiumni olib tashlash\n\n"
-        "🚫 /block <user_id> — foydalanuvchini bloklash\n"
-        "✅ /unblock <user_id> — blokdan chiqarish\n\n"
-        "👤 /userinfo <user_id> — foydalanuvchi ma'lumotlari",
-        parse_mode="Markdown",
+        "🔐 Admin buyruqlari:\n\n"
+        "📊 /stats - bot statistikasi\n"
+        "📢 /broadcast [matn] - barchaga xabar\n\n"
+        "⭐ /grant [user_id] - cheksiz premium berish\n"
+        "❌ /revoke [user_id] - premiumni olib tashlash\n\n"
+        "🚫 /block [user_id] - foydalanuvchini bloklash\n"
+        "✅ /unblock [user_id] - blokdan chiqarish\n\n"
+        "👤 /userinfo [user_id] - foydalanuvchi malumotlari",
     )
 
 
