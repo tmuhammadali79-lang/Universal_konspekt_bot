@@ -73,22 +73,22 @@ async def cmd_grant_premium(message: Message) -> None:
 
     parts = message.text.split()
     if len(parts) < 2:
-        await message.answer("Foydalanish: /grant <user_id>")
+        await message.answer("Foydalanish: /grant [user\_id]")
         return
 
     try:
         target_id = int(parts[1])
     except ValueError:
-        await message.answer("❌ Noto'g'ri user_id. Raqam kiriting.")
+        await message.answer("Notoqri user\_id. Raqam kiriting.")
         return
 
     user = await get_user(target_id)
     if not user:
-        await message.answer(f"❌ Foydalanuvchi topilmadi: {target_id}")
+        await message.answer(f"Foydalanuvchi topilmadi: {target_id}")
         return
 
     await set_unlimited_premium(target_id)
-    name = user.get("full_name", "Noma'lum")
+    name = user.get("full_name", "Nomalum")
     await message.answer(
         f"✅ **Cheksiz Premium berildi!**\n\n"
         f"👤 {name}\n"
@@ -110,22 +110,22 @@ async def cmd_revoke_premium(message: Message) -> None:
 
     parts = message.text.split()
     if len(parts) < 2:
-        await message.answer("Foydalanish: /revoke <user_id>")
+        await message.answer("Foydalanish: /revoke [user\_id]")
         return
 
     try:
         target_id = int(parts[1])
     except ValueError:
-        await message.answer("❌ Noto'g'ri user_id.")
+        await message.answer("Notoqri user\_id.")
         return
 
     user = await get_user(target_id)
     if not user:
-        await message.answer(f"❌ Foydalanuvchi topilmadi: {target_id}")
+        await message.answer(f"Foydalanuvchi topilmadi: {target_id}")
         return
 
     await remove_premium(target_id)
-    name = user.get("full_name", "Noma'lum")
+    name = user.get("full_name", "Nomalum")
     await message.answer(
         f"✅ **Premium olib tashlandi**\n\n"
         f"👤 {name}\n"
@@ -147,13 +147,13 @@ async def cmd_block_user(message: Message) -> None:
 
     parts = message.text.split()
     if len(parts) < 2:
-        await message.answer("Foydalanish: /block <user_id>")
+        await message.answer("Foydalanish: /block [user\_id]")
         return
 
     try:
         target_id = int(parts[1])
     except ValueError:
-        await message.answer("❌ Noto'g'ri user_id.")
+        await message.answer("Notoqri user\_id.")
         return
 
     # Prevent blocking admins
@@ -163,11 +163,11 @@ async def cmd_block_user(message: Message) -> None:
 
     user = await get_user(target_id)
     if not user:
-        await message.answer(f"❌ Foydalanuvchi topilmadi: {target_id}")
+        await message.answer(f"Foydalanuvchi topilmadi: {target_id}")
         return
 
     await block_user(target_id)
-    name = user.get("full_name", "Noma'lum")
+    name = user.get("full_name", "Nomalum")
     await message.answer(
         f"🚫 **Foydalanuvchi bloklandi!**\n\n"
         f"👤 {name}\n"
@@ -189,22 +189,22 @@ async def cmd_unblock_user(message: Message) -> None:
 
     parts = message.text.split()
     if len(parts) < 2:
-        await message.answer("Foydalanish: /unblock <user_id>")
+        await message.answer("Foydalanish: /unblock [user\_id]")
         return
 
     try:
         target_id = int(parts[1])
     except ValueError:
-        await message.answer("❌ Noto'g'ri user_id.")
+        await message.answer("Notoqri user\_id.")
         return
 
     user = await get_user(target_id)
     if not user:
-        await message.answer(f"❌ Foydalanuvchi topilmadi: {target_id}")
+        await message.answer(f"Foydalanuvchi topilmadi: {target_id}")
         return
 
     await unblock_user(target_id)
-    name = user.get("full_name", "Noma'lum")
+    name = user.get("full_name", "Nomalum")
     await message.answer(
         f"✅ **Blokdan chiqarildi!**\n\n"
         f"👤 {name}\n"
@@ -226,26 +226,26 @@ async def cmd_user_info(message: Message) -> None:
 
     parts = message.text.split()
     if len(parts) < 2:
-        await message.answer("Foydalanish: /userinfo <user_id>")
+        await message.answer("Foydalanish: /userinfo [user\_id]")
         return
 
     try:
         target_id = int(parts[1])
     except ValueError:
-        await message.answer("❌ Noto'g'ri user_id.")
+        await message.answer("Notoqri user\_id.")
         return
 
     user = await get_user(target_id)
     if not user:
-        await message.answer(f"❌ Foydalanuvchi topilmadi: {target_id}")
+        await message.answer(f"Foydalanuvchi topilmadi: {target_id}")
         return
 
-    premium_status = "❌ Yo'q"
+    premium_status = "Yoq"
     if user.get("is_premium"):
         until = user.get("premium_until", "")
-        premium_status = f"✅ Ha ({until})" if until else "✅ Ha"
+        premium_status = f"Ha ({until})" if until else "Ha"
 
-    blocked_status = "🚫 Ha" if user.get("is_blocked") else "✅ Yo'q"
+    blocked_status = "Ha" if user.get("is_blocked") else "Yoq"
 
     uid = user['user_id']
     name = user.get('full_name', 'Nomalum')
@@ -255,16 +255,15 @@ async def cmd_user_info(message: Message) -> None:
     created = user.get('created_at', '')
 
     await message.answer(
-        f"👤 **Foydalanuvchi ma'lumotlari**\n\n"
-        f"🆔 ID: `{uid}`\n"
+        f"👤 Foydalanuvchi malumotlari\n\n"
+        f"🆔 ID: {uid}\n"
         f"📛 Ism: {name}\n"
         f"👤 Username: @{uname}\n"
         f"🤖 AI rejim: {ai_mode}\n"
         f"⭐ Premium: {premium_status}\n"
         f"🚫 Bloklangan: {blocked_status}\n"
-        f"🔗 Referal kod: `{ref_code}`\n"
-        f"📅 Ro'yxatdan o'tgan: {created}",
-        parse_mode="Markdown",
+        f"🔗 Referal kod: {ref_code}\n"
+        f"📅 Royxatdan otgan: {created}",
     )
 
 
