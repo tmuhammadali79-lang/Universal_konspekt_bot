@@ -61,7 +61,8 @@ async def handle_group_voice(message: Message, bot: Bot) -> None:
         message.chat.id, message.from_user.id, voice_duration,
     )
 
-    file = None
+    raw_path = None
+    mp3_path = None
     try:
         # Download
         file = await bot.get_file(message.voice.file_id)
@@ -81,7 +82,7 @@ async def handle_group_voice(message: Message, bot: Bot) -> None:
         # Summarize (standard mode for groups)
         result = await summarize_text(transcript, duration, mode="standard")
 
-        # BUG FIX: Get bot username dynamically instead of hardcoding
+        # Get bot username dynamically
         bot_info = await bot.get_me()
         bot_username = bot_info.username or "FAHM_AI_BOT"
 
@@ -100,8 +101,7 @@ async def handle_group_voice(message: Message, bot: Bot) -> None:
         logger.warning("Group voice processing error: %s", e)
         # Don't send error messages in groups — too spammy
     finally:
-        if file:
-            cleanup(
-                TEMP_DIR / f"grp_{message.chat.id}_{file.file_id}.ogg",
-                TEMP_DIR / f"grp_{message.chat.id}_{file.file_id}.mp3",
-            )
+        if raw_path:
+            cleanup(raw_path)
+        if mp3_path:
+            cleanup(mp3_path)

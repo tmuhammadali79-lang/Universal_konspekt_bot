@@ -102,24 +102,28 @@ async def download_youtube_audio(url: str) -> Path:
         logger.error("yt-dlp error: %s", error_msg)
         raise RuntimeError(f"YouTube yuklab olishda xatolik: {error_msg[:200]}")
 
-    # Find the downloaded MP3 file
+    # Use the result path from yt-dlp, adjusting extension for post-processing
+    if result:
+        result_path = Path(result)
+        # yt-dlp reports original ext, but postprocessor converts to .mp3
+        mp3_path = result_path.with_suffix(".mp3")
+        if mp3_path.exists():
+            logger.info("Downloaded: %s", mp3_path.name)
+            return mp3_path
+        # Fallback: check if original file exists
+        if result_path.exists():
+            logger.info("Downloaded (original): %s", result_path.name)
+            return result_path
+
+    # Last resort fallback: find most recent yt_* file
     mp3_files = sorted(
         TEMP_DIR.glob("yt_*.mp3"),
         key=lambda p: p.stat().st_mtime,
         reverse=True,
     )
     if mp3_files:
-        logger.info("Downloaded: %s", mp3_files[0].name)
+        logger.info("Downloaded (fallback): %s", mp3_files[0].name)
         return mp3_files[0]
-
-    # Fallback: check for any recently created audio file
-    audio_files = sorted(
-        [f for f in TEMP_DIR.iterdir() if f.suffix in (".mp3", ".m4a", ".webm", ".opus")],
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    if audio_files:
-        return audio_files[0]
 
     raise RuntimeError("Yuklab olingan fayl topilmadi")
 

@@ -1,0 +1,24 @@
+services:
+  - type: worker
+    name: smart-summary-bot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: DB_PATH
+        value: data/bot.db
+      - key: FREE_DAILY_REQUESTS
+        value: "3"
+      - key: FREE_DAILY_MINUTES
+        value: "10"
+      - key: REFERRAL_BONUS_MINUTES
+        value: "5"
+      - key: PREMIUM_STARS_PRICE
+        value: "100"
+      - key: GROUP_VOICE_MIN_DURATION
+        value: "30"

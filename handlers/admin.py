@@ -1,5 +1,6 @@
 """Admin commands: stats, broadcast, premium grant, user block."""
 
+import asyncio
 import logging
 
 from aiogram import Router, F, Bot
@@ -298,6 +299,9 @@ async def cmd_broadcast(message: Message, bot: Bot) -> None:
             sent += 1
         except Exception:
             failed += 1
+
+        # Rate limit: avoid Telegram FloodWait (max ~30 msg/sec)
+        await asyncio.sleep(0.05)
 
         if (sent + failed) % 50 == 0:
             try:

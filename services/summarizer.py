@@ -227,9 +227,10 @@ async def summarize_text(transcript: str, duration_seconds: int = 0, mode: str =
     topic = "Nomsiz mavzu"
     for line in summary.split("\n"):
         if "mavzu" in line.lower() or "✨" in line:
-            topic = line.replace("✨", "").replace("**Mavzu:**", "").strip()
-            topic = topic.strip("* ").strip()
-            if topic:
+            candidate = line.replace("✨", "").replace("**Mavzu:**", "").replace("**", "").strip()
+            candidate = candidate.strip("* ").strip()
+            if candidate and len(candidate) > 2:
+                topic = candidate[:100]  # Cap topic length
                 break
 
     return {

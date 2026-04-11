@@ -27,14 +27,21 @@ def extract_instagram_url(text: str) -> str | None:
     return m.group(0) if m else None
 
 
+def _ensure_https(url: str) -> str:
+    """Ensure URL has https:// prefix."""
+    if not url.startswith("http"):
+        return "https://" + url
+    return url
+
+
 def detect_url_type(text: str) -> tuple[str, str] | None:
     """Return (type, url) or None."""
     yt = extract_youtube_url(text)
     if yt:
-        return ("youtube", yt)
+        return ("youtube", _ensure_https(yt))
     ig = extract_instagram_url(text)
     if ig:
-        return ("instagram", ig)
+        return ("instagram", _ensure_https(ig))
     return None
 
 

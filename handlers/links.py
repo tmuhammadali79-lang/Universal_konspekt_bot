@@ -96,11 +96,21 @@ async def _handle_plain_text(message: Message) -> None:
         await log_usage(user_id, "text", 0)
 
         # ── 6. Send result ───────────────────────────
-        await status_msg.edit_text(
-            truncate(result["summary"]),
-            parse_mode="Markdown",
-            reply_markup=summary_keyboard(summary_id),
-        )
+        try:
+            await status_msg.edit_text(
+                truncate(result["summary"]),
+                parse_mode="Markdown",
+                reply_markup=summary_keyboard(summary_id),
+            )
+        except Exception:
+            # If Markdown fails, send without formatting
+            try:
+                await status_msg.edit_text(
+                    truncate(result["summary"]),
+                    reply_markup=summary_keyboard(summary_id),
+                )
+            except Exception:
+                pass
 
     except Exception as e:
         error_msg = str(e) if str(e) else type(e).__name__
@@ -193,11 +203,21 @@ async def _handle_url(message: Message, bot: Bot, url_info: tuple) -> None:
         await log_usage(user_id, url_type, duration)
 
         # ── 9. Send result ───────────────────────────
-        await status_msg.edit_text(
-            truncate(result["summary"]),
-            parse_mode="Markdown",
-            reply_markup=summary_keyboard(summary_id),
-        )
+        try:
+            await status_msg.edit_text(
+                truncate(result["summary"]),
+                parse_mode="Markdown",
+                reply_markup=summary_keyboard(summary_id),
+            )
+        except Exception:
+            # If Markdown fails, send without formatting
+            try:
+                await status_msg.edit_text(
+                    truncate(result["summary"]),
+                    reply_markup=summary_keyboard(summary_id),
+                )
+            except Exception:
+                pass
 
     except Exception as e:
         error_msg = str(e) if str(e) else type(e).__name__

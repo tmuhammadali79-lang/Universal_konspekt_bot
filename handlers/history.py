@@ -68,10 +68,17 @@ async def cb_view_summary(callback: CallbackQuery) -> None:
         return
 
     text = truncate(summary["summary_text"])
-    await callback.message.edit_text(  # type: ignore[union-attr]
-        text,
-        parse_mode="Markdown",
-    )
+    try:
+        await callback.message.edit_text(  # type: ignore[union-attr]
+            text,
+            parse_mode="Markdown",
+        )
+    except Exception:
+        # Markdown parse failed — send without formatting
+        try:
+            await callback.message.edit_text(text)  # type: ignore[union-attr]
+        except Exception:
+            pass
 
 
 @router.callback_query(F.data.startswith("full_text:"))

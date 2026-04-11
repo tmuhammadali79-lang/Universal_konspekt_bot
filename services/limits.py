@@ -40,7 +40,9 @@ async def check_limit(user_id: int) -> dict:
             until = datetime.fromisoformat(user["premium_until"])
             if until > datetime.utcnow():
                 return {"allowed": True, "reason": "", "remaining_requests": 999, "remaining_minutes": 999}
-        # Premium expired → fall through to free tier
+        # Premium expired → reset in DB and fall through to free tier
+        from database.models import remove_premium
+        await remove_premium(user_id)
 
     # Free tier limits
     usage = await get_today_usage(user_id)

@@ -13,6 +13,7 @@ class ThrottleMiddleware(BaseMiddleware):
     def __init__(self, cooldown: float = 3.0) -> None:
         self.cooldown = cooldown
         self._last: Dict[int, float] = {}
+        self._cleanup_counter = 0
 
     async def __call__(
         self,
@@ -32,4 +33,12 @@ class ThrottleMiddleware(BaseMiddleware):
             return None
 
         self._last[user_id] = now
+
+        # Periodic cleanup: every 100 messages, remove stale entries
+        self._cleanup_counter += 1
+        if self._cleanup_counter >= 100:
+            self._cleanup_counter = 0
+            cutoff = now - self.cooldown * 2
+            self._last = {uid: ts for uid, ts in self._last.items() if ts > cutoff}
+
         return await handler(event, data)
