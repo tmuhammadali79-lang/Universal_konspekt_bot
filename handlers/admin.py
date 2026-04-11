@@ -12,6 +12,7 @@ from database.models import (
     get_total_users, get_total_summaries, get_all_user_ids,
     get_user, block_user, unblock_user,
     set_unlimited_premium, remove_premium,
+    get_all_users,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,13 +34,48 @@ async def cmd_admin_help(message: Message) -> None:
     await message.answer(
         "🔐 Admin buyruqlari:\n\n"
         "📊 /stats - bot statistikasi\n"
-        "📢 /broadcast [matn] - barchaga xabar\n\n"
+        "📢 /broadcast [matn] - barchaga xabar\n"
+        "👥 /users - barcha foydalanuvchilar royxati\n\n"
         "⭐ /grant [user_id] - cheksiz premium berish\n"
         "❌ /revoke [user_id] - premiumni olib tashlash\n\n"
         "🚫 /block [user_id] - foydalanuvchini bloklash\n"
         "✅ /unblock [user_id] - blokdan chiqarish\n\n"
         "👤 /userinfo [user_id] - foydalanuvchi malumotlari",
     )
+
+
+# ── /users — list all users ──────────────────────────
+
+@router.message(Command("users"))
+async def cmd_users_list(message: Message) -> None:
+    """Admin: list all users with IDs."""
+    if not message.from_user or not is_admin(message.from_user.id):
+        return
+
+    users = await get_all_users()
+    if not users:
+        await message.answer("👥 Hozircha foydalanuvchilar yo'q.")
+        return
+
+    # Build user list in chunks to avoid message length limits
+    CHUNK_SIZE = 50
+    for i in range(0, len(users), CHUNK_SIZE):
+        chunk = users[i:i + CHUNK_SIZE]
+        lines = []
+        for idx, u in enumerate(chunk, start=i + 1):
+            uid = u["user_id"]
+            name = u.get("full_name") or "Nomalum"
+            uname = f"@{u['username']}" if u.get("username") else "—"
+            status = ""
+            if u.get("is_premium"):
+                status += "⭐"
+            if u.get("is_blocked"):
+                status += "🚫"
+            lines.append(f"{idx}. {name} ({uname})\n   🆔 `{uid}` {status}")
+
+        header = f"👥 Foydalanuvchilar ro'yhati ({len(users)} ta):\n\n"
+        text = header + "\n\n".join(lines) if i == 0 else "\n\n".join(lines)
+        await message.answer(text, parse_mode="Markdown")
 
 
 # ── /stats ───────────────────────────────────────────

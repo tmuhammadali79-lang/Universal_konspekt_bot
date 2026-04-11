@@ -136,6 +136,17 @@ async def get_all_user_ids() -> list[int]:
         return [r[0] for r in rows]
 
 
+async def get_all_users() -> list[dict]:
+    """Return all users with basic info."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute(
+            "SELECT user_id, username, full_name, is_premium, is_blocked, created_at FROM users ORDER BY created_at DESC"
+        )
+        rows = await cursor.fetchall()
+        return [dict(r) for r in rows]
+
+
 async def block_user(user_id: int) -> None:
     """Block a user from using the bot."""
     async with aiosqlite.connect(DB_PATH) as db:
